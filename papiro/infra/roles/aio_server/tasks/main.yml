@@ -1,0 +1,32 @@
+---
+- name: Update package cache
+  ansible.builtin.dnf:
+    update_cache: true
+    state: present
+
+- name: Remove curl-minimal to avoid conflict
+  tags: caddy
+  ansible.builtin.dnf:
+    name: curl-minimal
+    state: absent
+
+- name: Install general tools
+  ansible.builtin.dnf:
+    name:
+      - git
+      - vim
+      - curl
+      - tar
+      - amazon-cloudwatch-agent
+    state: present
+
+- name: Install Caddy
+  become: true
+  roles:
+    - role: caddy_ansible.caddy_ansible
+      caddy_config: |
+        files.example.com
+        encode gzip
+        file_server browse {
+            root /home/caddy/
+        }

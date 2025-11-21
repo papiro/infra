@@ -1,0 +1,14 @@
+{
+  "client": "better-sqlite3",
+  "connection": {
+    "filename": ":memory:"
+  },
+  "filename": "./db/types",
+  "interfaceNameFormat": "${table}",
+  "tableNameCasing": "pascal",
+  "columnNameCasing": "camel",
+  "enumNameCasing": "pascal",
+  "enumKeyCasing": "upper",
+  "singularTableNames": true,
+  "template": "./db/sql-ts.template.hbs"
+}
