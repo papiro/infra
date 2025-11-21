@@ -1,3 +1,3 @@
 # Ansible Collection - papiro.infra
 
-Documentation for the collection.
+A collection of Ansible primitives to aid my development efforts
