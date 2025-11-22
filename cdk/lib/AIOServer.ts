@@ -1,4 +1,4 @@
-import { CfnOutput, Duration, Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import {
   Vpc,
@@ -16,29 +16,15 @@ import {
   SubnetType,
   AmazonLinuxCpuType,
 } from "aws-cdk-lib/aws-ec2";
-import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
 import {
   Role,
   ServicePrincipal,
   ManagedPolicy,
-  PolicyStatement,
-  Effect,
   PolicyDocument,
 } from "aws-cdk-lib/aws-iam";
-import { Bucket } from "aws-cdk-lib/aws-s3";
 
-export interface AppDefinition {
-  id: string;
-  domains: string[];
-  port: number;
-}
-
-export interface AIOServerStackProps extends StackProps {
-  vpc: Vpc;
-  /** Public domains that should resolve to the AIO server */
-  apps?: AppDefinition[];
+export interface AIOServerProps extends StackProps {
   keyPairName: string;
-  imageS3Bucket: Bucket;
   userData?: string[];
   instanceType?: string;
   inlinePolicies?: Record<string, PolicyDocument>;
@@ -52,17 +38,23 @@ export class AIOServer extends Construct {
     scope: Construct,
     id: string,
     {
-      vpc,
-      apps = [],
       keyPairName,
-      imageS3Bucket,
       userData = [],
       instanceType = "t4g.small",
       inlinePolicies,
-      ...props
-    }: AIOServerStackProps
+    }: AIOServerProps
   ) {
     super(scope, id);
+
+    const vpc = new Vpc(this, "Vpc", {
+      maxAzs: 1,
+      subnetConfiguration: [
+        {
+          name: "PublicSubnet",
+          subnetType: SubnetType.PUBLIC,
+        },
+      ],
+    });
 
     const securityGroup = new SecurityGroup(this, "SecurityGroup", {
       vpc,
@@ -140,26 +132,6 @@ export class AIOServer extends Construct {
     new CfnOutput(this, "AIOServerInstanceId", {
       value: instance.instanceId,
       exportName: "AIOServerInstanceId",
-    });
-
-    // Public DNS records per incubated application
-    apps.forEach((appDef) => {
-      const publicZone = HostedZone.fromLookup(
-        this,
-        `${appDef.id}-PublicZone`,
-        {
-          domainName: appDef.domains[0].split(".").slice(1).join("."),
-        }
-      );
-
-      appDef.domains.forEach((domain) => {
-        new ARecord(this, `ARecord-${domain}`, {
-          zone: publicZone,
-          recordName: domain.replace(`.${publicZone.zoneName}`, ""),
-          target: RecordTarget.fromIpAddresses(instance.instancePublicIp),
-          ttl: Duration.minutes(1),
-        });
-      });
     });
 
     this.instance = instance;

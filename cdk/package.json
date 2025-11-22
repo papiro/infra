@@ -1,12 +1,17 @@
 {
-  "name": "cdk",
-  "version": "0.1.0",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "name": "@papiro/cdk",
+  "version": "0.0.4",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "test": "jest"
+    "build": "tsc --outDir dist",
+    "watch": "tsc -w --outDir dist",
+    "test": "jest",
+    "prepack": "npm run build",
+    "postpack": "rm -R dist"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
