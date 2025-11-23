@@ -8,17 +8,19 @@ print_usage() {
   exit 1
 }
 
-VERSION_TYPE="patch"
-DEBUG="false"
+VERSION_TYPE="alpha"
+DEBUG="true"
 
-while getopts "dm" opt; do
+while getopts "dmf" opt; do
   case $opt in
     d)
       DEBUG="true"
-      VERSION_TYPE="alpha"
       ;;
     m)
       VERSION_TYPE="${OPTARG}"
+      ;;
+    f)
+      DEBUG="false"
       ;;
     *)
       print_usage

@@ -24,6 +24,7 @@
   become: true
   ansible.builtin.import_role:
     name: caddy_ansible.caddy_ansible
+  vars:
     caddy_config: |
       files.example.com
       encode gzip
