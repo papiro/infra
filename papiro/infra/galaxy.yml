@@ -9,7 +9,7 @@ namespace: papiro
 name: infra
 
 # The version of the collection. Must be compatible with semantic versioning
-version: 0.0.6-alpha.4
+version: 0.0.6-alpha.5
 
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: README.md

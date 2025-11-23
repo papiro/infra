@@ -47,15 +47,18 @@ case $VERSION_TYPE in
     ;;
   patch)
     NEW_VERSION_PATCH=$((CURRENT_VERSION_PATCH + 1))
+    NEW_VERSION_ALPHA=0
     ;;
   minor)
     NEW_VERSION_MINOR=$((CURRENT_VERSION_MINOR + 1))
     NEW_VERSION_PATCH=0
+    NEW_VERSION_ALPHA=0
     ;;
   major)
     NEW_VERSION_MAJOR=$((CURRENT_VERSION_MAJOR + 1))
     NEW_VERSION_MINOR=0
     NEW_VERSION_PATCH=0
+    NEW_VERSION_ALPHA=0
     ;;
   *)
     echo "Invalid version type: $VERSION_TYPE"
