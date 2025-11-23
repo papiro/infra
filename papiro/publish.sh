@@ -1,7 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION_TYPE="${1:-patch}"
+print_usage() {
+  echo "Usage: $0 [-d] [-m <version_type>]"
+  echo "  -d: Debug mode"
+  echo "  -m: Version type (patch, minor, major)"
+  exit 1
+}
+
+VERSION_TYPE="patch"
+DEBUG="false"
+
+while getopts "dm" opt; do
+  case $opt in
+    d)
+      DEBUG="true"
+      VERSION_TYPE="alpha"
+      ;;
+    m)
+      VERSION_TYPE="${OPTARG}"
+      ;;
+    *)
+      print_usage
+      exit 1
+  esac
+done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -9,13 +32,19 @@ CURRENT_VERSION=$(sed -n 's/version: //p' "$SCRIPT_DIR/infra/galaxy.yml")
 CURRENT_VERSION_PARTS=(${CURRENT_VERSION//./ })
 CURRENT_VERSION_MAJOR=${CURRENT_VERSION_PARTS[0]}
 CURRENT_VERSION_MINOR=${CURRENT_VERSION_PARTS[1]}
-CURRENT_VERSION_PATCH=${CURRENT_VERSION_PARTS[2]}
+CURRENT_VERSION_PATCH_PARTS=(${CURRENT_VERSION_PARTS[2]//-/ })
+CURRENT_VERSION_PATCH=${CURRENT_VERSION_PATCH_PARTS[0]}
+CURRENT_VERSION_ALPHA=${CURRENT_VERSION_PARTS[3]:-0}
 
 NEW_VERSION_MAJOR=$CURRENT_VERSION_MAJOR
 NEW_VERSION_MINOR=$CURRENT_VERSION_MINOR
 NEW_VERSION_PATCH=$CURRENT_VERSION_PATCH
+NEW_VERSION_ALPHA=$CURRENT_VERSION_ALPHA
 
 case $VERSION_TYPE in
+  alpha)
+    NEW_VERSION_ALPHA=$((CURRENT_VERSION_ALPHA + 1))
+    ;;
   patch)
     NEW_VERSION_PATCH=$((CURRENT_VERSION_PATCH + 1))
     ;;
@@ -35,6 +64,10 @@ case $VERSION_TYPE in
 
 NEW_VERSION="$NEW_VERSION_MAJOR.$NEW_VERSION_MINOR.$NEW_VERSION_PATCH"
 
+if [ $NEW_VERSION_ALPHA -gt 0 ]; then
+  NEW_VERSION="$NEW_VERSION-alpha.$NEW_VERSION_ALPHA"
+fi
+
 set_version() {
     perl -i -pe"s/version: .*/version: $1/" "$SCRIPT_DIR/infra/galaxy.yml"
 }
@@ -51,6 +84,11 @@ set_version $NEW_VERSION
 
 echo "[Publish] Building collection..."
 ansible-galaxy collection build "$SCRIPT_DIR/infra" --output-path "$SCRIPT_DIR/dist" --force
+
+if [ $DEBUG == "true" ]; then
+  echo "[Publish] Skipping publishing collection..."
+  exit 0
+fi
 
 echo "[Publish] Publishing collection..."
 ansible-galaxy collection publish "$SCRIPT_DIR/dist/papiro-infra-$NEW_VERSION.tar.gz" --api-key "$ANSIBLE_GALAXY_API_KEY"

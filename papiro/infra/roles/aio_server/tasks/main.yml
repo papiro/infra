@@ -20,13 +20,13 @@
       - amazon-cloudwatch-agent
     state: present
 
-- name: Install Caddy
+- name: Install Caddy server
   become: true
-  roles:
-    - role: caddy_ansible.caddy_ansible
-      caddy_config: |
-        files.example.com
-        encode gzip
-        file_server browse {
-            root /home/caddy/
-        }
+  ansible.builtin.import_role:
+    name: caddy_ansible.caddy_ansible
+    caddy_config: |
+      files.example.com
+      encode gzip
+      file_server browse {
+          root /home/caddy/
+      }
