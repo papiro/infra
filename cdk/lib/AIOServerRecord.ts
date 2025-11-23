@@ -20,7 +20,7 @@ export class AIOServerRecord extends Construct {
     const publicZone =
       hostedZone ??
       HostedZone.fromLookup(this, `${domain}-PublicZone`, {
-        domainName: domain.split(".").slice(1).join("."),
+        domainName: domain,
       });
 
     new ARecord(this, `ARecord-${domain}`, {
