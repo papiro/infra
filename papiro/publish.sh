@@ -2,25 +2,22 @@
 set -euo pipefail
 
 print_usage() {
-  echo "Usage: $0 [-d] [-m <version_type>]"
-  echo "  -d: Debug mode"
-  echo "  -m: Version type (patch, minor, major)"
+  echo "Usage: $0 [-t <version_type>] [-f]"
+  echo "  -t: Version type (patch, minor, major)"
+  echo "  -f: Publish to Ansible Galaxy (default: false)"
   exit 1
 }
 
 VERSION_TYPE="alpha"
-DEBUG="true"
+PUBLISH="false"
 
-while getopts "dmf" opt; do
+while getopts "t:f" opt; do
   case $opt in
-    d)
-      DEBUG="true"
-      ;;
-    m)
+    t)
       VERSION_TYPE="${OPTARG}"
       ;;
     f)
-      DEBUG="false"
+      PUBLISH="true"
       ;;
     *)
       print_usage
@@ -90,7 +87,7 @@ set_version $NEW_VERSION
 echo "[Publish] Building collection..."
 ansible-galaxy collection build "$SCRIPT_DIR/infra" --output-path "$SCRIPT_DIR/dist" --force
 
-if [ $DEBUG == "true" ]; then
+if [ $PUBLISH == "false" ]; then
   echo "[Publish] Skipping publishing collection..."
   exit 0
 fi
