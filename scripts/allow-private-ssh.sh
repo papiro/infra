@@ -3,7 +3,7 @@
 #
 # Steps performed:
 #   1. Detect the caller's IPv4 address using https://ipv4.icanhazip.com/.
-#   2. Locate the EC2 instance tagged Name=${INSTANCE_NAME}.
+#   2. Locate the EC2 instance by public IP address.
 #   3. Add an ingress rule on the instance's primary security group to allow TCP/22 from that IPv4 /32,
 #      if such a rule is not already present.
 #
@@ -12,14 +12,14 @@
 #   • curl
 #
 # Usage:
-#   ./allow-private-ssh.sh <INSTANCE_NAME>
+#   ./allow-private-ssh.sh <IP_ADDRESS>
 #
 set -euo pipefail
 
-INSTANCE_NAME=${1-}
+IP_ADDRESS=${1-}
 
-if [[ -z "${INSTANCE_NAME}" ]]; then
-  echo "[SSH Access] Error: Instance name is required." >&2
+if [[ -z "${IP_ADDRESS}" ]]; then
+  echo "[SSH Access] Error: IP address is required." >&2
   exit 1
 fi
 
@@ -41,14 +41,14 @@ echo "[SSH Access] Current IPv4: ${CIDR}"
 # 2. Locate the EC2 instance            
 ########################################
 
-echo "[SSH Access] Locating EC2 instance ${INSTANCE_NAME}"
+echo "[SSH Access] Locating EC2 instance with public IP ${IP_ADDRESS}"
 INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=${INSTANCE_NAME}" \
+  --filters "Name=ip-address,Values=${IP_ADDRESS}" \
   --query 'Reservations[0].Instances[0].InstanceId' \
   --output text)
 
 if [[ "${INSTANCE_ID}" == "None" || "${INSTANCE_ID}" == "" ]]; then
-  echo "[SSH Access] Error: Instance not found." >&2
+  echo "[SSH Access] Error: Instance with public IP ${IP_ADDRESS} not found." >&2
   exit 1
 fi
 
