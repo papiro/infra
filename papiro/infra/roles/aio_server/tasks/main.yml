@@ -4,30 +4,23 @@
     update_cache: true
     state: present
 
-- name: Remove curl-minimal to avoid conflict
-  tags: caddy
-  ansible.builtin.dnf:
-    name: curl-minimal
-    state: absent
-
 - name: Install general tools
   ansible.builtin.dnf:
     name:
       - git
       - vim
-      - curl
       - tar
       - amazon-cloudwatch-agent
+    state: present
+
+- name: Replace curl-minimal with curl
+  ansible.builtin.dnf:
+    name:
+      - curl
+    allowerasing: true
     state: present
 
 - name: Install Caddy server
   become: true
   ansible.builtin.import_role:
-    name: caddy_ansible.caddy_ansible
-  vars:
-    caddy_config: |
-      files.example.com
-      encode gzip
-      file_server browse {
-          root /home/caddy/
-      }
+    name: papiro.infra.caddy

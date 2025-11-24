@@ -1,3 +1,83 @@
-#SPDX-License-Identifier: MIT-0
+# SPDX-License-Identifier: MIT-0
 ---
-# tasks file for caddy
+- name: Update package cache
+  ansible.builtin.dnf:
+    update_cache: true
+    state: present
+
+# For DNF 5 (Amazon Linux 2023 uses DNF 4).
+# Switch to this method if it ever updates to DNF 5.
+# - name: Install dnf plugins
+#   ansible.builtin.dnf:
+#     name: dnf-plugins-core
+#     state: present
+
+# - name: Enable Caddy repository
+#   community.general.copr:
+#     name: "@caddy/caddy"
+#     state: enabled
+
+# - name: Install Caddy
+#   ansible.builtin.dnf:
+#     name: caddy
+#     state: present
+
+- name: Download Caddy static binary
+  ansible.builtin.get_url:
+    url: "https://github.com/caddyserver/caddy/releases/download/v2.10.2/caddy_2.10.2_linux_arm64.tar.gz"
+    dest: /tmp/caddy.tar.gz
+    mode: "0644"
+
+- name: Extract Caddy binary
+  ansible.builtin.unarchive:
+    src: /tmp/caddy.tar.gz
+    dest: /tmp/
+    remote_src: true
+
+- name: Move Caddy binary to /usr/bin
+  ansible.builtin.copy:
+    src: /tmp/caddy
+    dest: /usr/bin/caddy
+    mode: "0755"
+    remote_src: true
+
+- name: Create caddy user and group
+  ansible.builtin.user:
+    name: caddy
+    system: true
+    create_home: true
+    home: /var/lib/caddy
+    shell: /usr/sbin/nologin
+
+- name: Create Caddy directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: caddy
+    group: caddy
+    mode: "0755"
+  loop:
+    - /etc/caddy
+    - /var/lib/caddy
+    - /var/log/caddy
+
+- name: Template Caddyfile
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    owner: caddy
+    group: caddy
+    mode: "0644"
+  notify: Reload Caddy
+
+- name: Download official Caddy systemd service file
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/caddyserver/dist/master/init/caddy.service"
+    dest: /etc/systemd/system/caddy.service
+    mode: "0644"
+
+- name: Reload systemd and enable Caddy
+  ansible.builtin.systemd:
+    name: caddy
+    enabled: true
+    state: started

@@ -1,0 +1,38 @@
+(cors) {
+  # Allow CORS pre-flight only for requests originating from our domain
+  # To use this, import cors <domain>, e.g. import cors https://kiwi-ai.net inside a block
+  @cors_preflight{args.0} {
+    method OPTIONS
+    header Origin {args.0}
+  }
+  handle @cors_preflight{args.0} {
+    header {
+      Access-Control-Allow-Origin "{args.0}"
+      Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+      Access-Control-Allow-Headers "Origin, Accept, Authorization, Content-Type, X-CSRF-Token"
+      Access-Control-Allow-Credentials "true"
+      Access-Control-Max-Age "3600"
+      Vary "Origin"
+      defer
+    }
+    respond "" 204
+  }
+
+  # Allow non-preflight CORS requests only when the Origin header matches our domain
+  @cors_request{args.0} {
+    not method OPTIONS
+    header Origin {args.0}
+  }
+  handle @cors_request{args.0} {
+    header {
+      Access-Control-Allow-Origin "{args.0}"
+      Access-Control-Allow-Credentials "true"
+      Vary "Origin"
+      defer
+    }
+  }
+}
+
+localhost {
+	respond "Hello, world!"
+}
