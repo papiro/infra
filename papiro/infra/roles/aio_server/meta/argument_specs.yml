@@ -1,0 +1,24 @@
+---
+argument_specs:
+  main:
+    author: Pierre Pirault
+    options:
+      caddy_version:
+        description: The version of Caddy to install
+        required: false
+        default: "2.10.2"
+        type: str
+        choices:
+          - 2.10.2
+          - 2.10.1
+          - 2.10.0
+          - 2.9.9
+          - 2.9.8
+      caddy_caddyfile_block:
+        description: An optional block to add to the Caddyfile. This will be added to the end of the Caddyfile.
+        required: false
+        default: |
+          localhost {
+            respond "Hello, world!"
+          }
+        type: str

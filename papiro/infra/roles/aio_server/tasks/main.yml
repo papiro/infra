@@ -24,3 +24,6 @@
   become: true
   ansible.builtin.import_role:
     name: papiro.infra.caddy
+  vars:
+    version: "{{ caddy_version }}"
+    caddyfile_block: "{{ caddy_caddyfile_block }}"

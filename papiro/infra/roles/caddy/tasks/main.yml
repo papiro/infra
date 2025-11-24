@@ -24,7 +24,7 @@
 
 - name: Download Caddy static binary
   ansible.builtin.get_url:
-    url: "https://github.com/caddyserver/caddy/releases/download/v2.10.2/caddy_2.10.2_linux_arm64.tar.gz"
+    url: "https://github.com/caddyserver/caddy/releases/download/v{{ version }}/caddy_{{ version }}_linux_arm64.tar.gz"
     dest: /tmp/caddy.tar.gz
     mode: "0644"
 
@@ -61,7 +61,7 @@
     - /var/lib/caddy
     - /var/log/caddy
 
-- name: Template Caddyfile
+- name: Transfer Caddyfile
   ansible.builtin.template:
     src: Caddyfile.j2
     dest: /etc/caddy/Caddyfile
@@ -69,6 +69,15 @@
     group: caddy
     mode: "0644"
   notify: Reload Caddy
+
+- name: Add caddyfile_block to Caddyfile
+  ansible.builtin.lineinfile:
+    path: /etc/caddy/Caddyfile
+    line: "{{ caddyfile_block }}"
+    create: true
+    owner: caddy
+    group: caddy
+    mode: "0644"
 
 - name: Download official Caddy systemd service file
   ansible.builtin.get_url:

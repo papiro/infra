@@ -1,3 +1,8 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# defaults file for aio_server_new
+# noqa: var-naming[no-role-prefix]
+caddy_version: 2.10.2
+# noqa: var-naming[no-role-prefix]
+caddy_caddyfile_block: |
+  localhost {
+    respond "Hello, world!"
+  }
