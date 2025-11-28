@@ -113,15 +113,7 @@ new AIOServerRecord(this, 'DNS', {
 ### Installation
 
 ```bash
-cd cdk
-npm install
-npm run build
-```
-
-### Deployment
-
-```bash
-cdk deploy
+npm install @papiro/cdk
 ```
 
 ## Ansible Collection: papiro.infra
@@ -183,6 +175,7 @@ repo_user: "github-username"
 repo_url_path: "username/repository"
 repo_path: "/opt/application"
 repo_branch: "main"
+fine_grained_pat: xxxxxxxxxxxxxxxxxxxx
 ```
 
 **Example:**
@@ -196,17 +189,10 @@ repo_branch: "main"
         repo_url_path: "myorg/my-app"
         repo_path: "/var/www/app"
         repo_branch: "production"
+        fine_grained_pat: xxxxxxxxxxxxxxxxxxxx
 ```
 
 ### Installation
-
-```bash
-cd papiro/infra
-ansible-galaxy collection build
-ansible-galaxy collection install papiro-infra-*.tar.gz
-```
-
-Or install directly from the collection:
 
 ```bash
 ansible-galaxy collection install papiro.infra
@@ -278,7 +264,7 @@ Located in `templates/database/`:
 - **sql-ts.config.json** - Configuration for [sql-ts](https://github.com/rmp135/sql-ts) TypeScript type generation
 - **sql-ts.template.hbs** - Handlebars template for customizing TypeScript output
 
-These templates are designed for PostgreSQL and SQLite projects using declarative schema management.
+These templates were designed and tested on PostgreSQL and SQLite projects using declarative schema management.
 
 ## Prerequisites
 
@@ -297,32 +283,6 @@ These templates are designed for PostgreSQL and SQLite projects using declarativ
 - AWS CLI v2
 - `dig` command (typically from `bind-utils` or `dnsutils` package)
 - SSH client
-
-## Development
-
-### Building CDK Constructs
-
-```bash
-cd cdk
-npm install
-npm run build
-npm test
-```
-
-### Testing Ansible Roles
-
-```bash
-cd papiro/infra
-ansible-playbook roles/*/tests/test.yml -i roles/*/tests/inventory
-```
-
-### Publishing Ansible Collection
-
-```bash
-cd papiro/infra
-ansible-galaxy collection build
-# Upload to Ansible Galaxy or private repository
-```
 
 ## Architecture Patterns
 
