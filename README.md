@@ -1,6 +1,6 @@
 # Infrastructure Repository
 
-A collection of production-ready DevOps constructs, automation tools, and patterns for AWS-based deployments. This repository demonstrates infrastructure as code, configuration management, and deployment automation best practices.
+A collection of reusable DevOps constructs, automation tools, and patterns for AWS-based deployments. This repository demonstrates infrastructure as code, configuration management, and deployment automation practices for developers building and managing their own infrastructure.
 
 ## Repository Structure
 
@@ -18,7 +18,7 @@ Custom AWS CDK constructs for deploying and managing EC2-based infrastructure wi
 
 ### AIOServer Construct
 
-The `AIOServer` construct creates a fully-configured, production-ready EC2 instance with networking, security, and monitoring. It demonstrates advanced AWS CDK patterns including:
+The `AIOServer` construct creates a fully-configured EC2 instance with networking, security, and monitoring. It demonstrates advanced AWS CDK patterns including:
 
 - **Automated VPC provisioning** with public subnet configuration
 - **Elastic IP allocation** for stable public addressing across instance replacements
@@ -193,7 +193,7 @@ ansible-galaxy collection install papiro.infra
 
 ## Standalone Scripts
 
-Production-ready Bash scripts for common operational tasks.
+Bash scripts for common operational tasks.
 
 ### allow-private-ssh.sh
 
@@ -305,13 +305,13 @@ ansible-galaxy collection build
 
 ## Architecture Patterns
 
-This repository demonstrates several infrastructure patterns:
+This repository demonstrates several infrastructure patterns useful for developers:
 
 - **Infrastructure as Code**: All AWS resources defined declaratively using CDK
 - **Immutable Infrastructure**: User data scripts for reproducible instance configuration
 - **Configuration Management**: Ansible for idempotent server setup
 - **Security Automation**: Dynamic security group rules based on operator IP
-- **Single-Instance Deployment**: Cost-effective pattern for small to medium applications
+- **Single-Instance Deployment**: Cost-effective pattern for development and small applications
 
 ## License
 
