@@ -11,6 +11,7 @@
       - vim
       - tar
       - amazon-cloudwatch-agent
+      - acl
     state: present
 
 - name: Replace curl-minimal with curl

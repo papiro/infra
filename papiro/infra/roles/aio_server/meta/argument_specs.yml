@@ -1,7 +1,6 @@
 ---
 argument_specs:
   main:
-    author: Pierre Pirault
     options:
       caddy_version:
         description: The version of Caddy to install

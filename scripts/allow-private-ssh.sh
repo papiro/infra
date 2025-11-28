@@ -19,7 +19,7 @@ set -euo pipefail
 IP_ADDRESS=${1-}
 
 if [[ -z "${IP_ADDRESS}" ]]; then
-  echo "[SSH Access] Error: IP address is required." >&2
+  echo "[SSH Access] Error: Server IP address is required." >&2
   exit 1
 fi
 
@@ -27,7 +27,7 @@ fi
 # 1. Detect current public IPv4 address
 ########################################
 echo "[SSH Access] Detecting current IPv4 address…"
-CURRENT_IPV4=$(curl -4 -s https://ipv4.icanhazip.com/ | tr -d '\n')
+CURRENT_IPV4=$(dig +short txt ch whoami.cloudflare @1.0.0.1 | tr -d '"')
 
 if [[ -z "${CURRENT_IPV4}" ]]; then
   echo "[SSH Access] Error: Unable to determine IPv4 address." >&2
@@ -83,7 +83,7 @@ if [[ -n "${EXISTING_CIDRS}" ]]; then
       --group-id "${SECURITY_GROUP_ID}" \
       --protocol tcp \
       --port 22 \
-      --cidr "${OLD_CIDR}"
+      --cidr "${OLD_CIDR}" > /dev/null
   done
 fi
 
@@ -91,6 +91,6 @@ fi
 echo "[SSH Access] Authorizing ingress for ${CIDR}…"
 aws ec2 authorize-security-group-ingress \
   --group-id "${SECURITY_GROUP_ID}" \
-  --ip-permissions "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=${CIDR},Description='Developer SSH access'}]"
+  --ip-permissions "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=${CIDR},Description='Developer SSH access'}]" > /dev/null
 
 echo "[SSH Access] Ingress rule updated."
