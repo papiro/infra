@@ -1,0 +1,26 @@
+---
+- name: Configure Git Credential Helper
+  community.general.git_config:
+    name: credential.helper
+    value: store
+    scope: global
+
+- name: Configure Git Credential Use HTTP Path
+  community.general.git_config:
+    name: credential.useHttpPath
+    value: true
+    scope: global
+
+- name: Create .gitcredentials file
+  ansible.builtin.template:
+    src: .git-credentials.j2
+    dest: "~/.git-credentials"
+    mode: "0600"
+
+- name: Clone repository
+  ansible.builtin.git:
+    repo: "https://{{ repo_user }}@github.com/{{ repo_url_path }}.git"
+    dest: "{{ repo_path }}"
+    force: true
+    recursive: true
+    version: "{{ repo_branch }}"

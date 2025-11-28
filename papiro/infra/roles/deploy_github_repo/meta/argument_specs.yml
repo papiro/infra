@@ -1,0 +1,25 @@
+---
+argument_specs:
+  main:
+    options:
+      repo_url_path:
+        description: The URL path of the Github repository (e.g. <owner>/<repo>)
+        required: true
+        type: str
+      repo_user:
+        description: The user ID of the Github repository
+        required: true
+        type: str
+      repo_branch:
+        description: The branch of the Github repository to deploy
+        required: false
+        default: main
+        type: str
+      repo_path:
+        description: Where to clone the repository
+        required: true
+        type: str
+      fine_grained_pat:
+        description: A fine-grained PAT for the Github repository
+        required: true
+        type: str
