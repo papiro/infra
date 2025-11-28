@@ -2,6 +2,34 @@
 
 A collection of reusable DevOps constructs, automation tools, and patterns for AWS-based deployments. This repository demonstrates infrastructure as code, configuration management, and deployment automation practices for developers building and managing their own infrastructure.
 
+## The All-In-One (AIO) Architecture
+
+This repository provides a complete solution for deploying multiple web applications on a single EC2 instance. The components work together to create an "All-In-One" server that is optimized for three key concerns:
+
+**Cost Optimization**
+- Single EC2 instance hosts multiple applications
+- No NAT Gateway, API Gateway, or other expensive managed services
+- ARM64 (Graviton) instance types for better price-performance
+- Efficient resource utilization with Caddy as a lightweight reverse proxy
+
+**Security**
+- Only ports 80 and 443 are exposed to the internet for HTTPS traffic
+- SSH access is dynamically granted via `allow-private-ssh.sh` script, which automatically updates security group rules to allow only your current IP address
+- Encrypted EBS volumes by default
+- Amazon Linux 2023 with regular security updates
+
+**Maintainability**
+- Amazon Linux 2023 provides long-term support and automatic security patches
+- Infrastructure as Code (CDK) for reproducible deployments
+- Ansible roles for consistent server configuration
+- Caddy automatically handles HTTPS certificates via Let's Encrypt
+
+The typical deployment flow:
+1. **CDK** provisions the EC2 instance, VPC, security groups, and DNS records
+2. **Ansible** configures the server with Caddy, CloudWatch monitoring, and application dependencies
+3. **Scripts** provide operational tools for secure SSH access and deployment workflows
+4. **Caddy** serves as a reverse proxy, routing traffic to multiple applications based on domain names
+
 ## Repository Structure
 
 ```
@@ -18,14 +46,7 @@ Custom AWS CDK constructs for deploying and managing EC2-based infrastructure wi
 
 ### AIOServer Construct
 
-The `AIOServer` construct creates a fully-configured EC2 instance with networking, security, and monitoring. It demonstrates advanced AWS CDK patterns including:
-
-- **Automated VPC provisioning** with public subnet configuration
-- **Elastic IP allocation** for stable public addressing across instance replacements
-- **Encrypted EBS volumes** with GP3 storage for improved I/O performance
-- **IAM role integration** with SSM and CloudWatch permissions
-- **Security group management** with configurable ingress rules
-- **Custom user data injection** for instance bootstrapping
+The `AIOServer` construct encapsulates the complete infrastructure needed for a single-instance application server. It provisions a VPC, EC2 instance, security groups, Elastic IP, and necessary IAM roles in a single reusable construct. The key feature is its opinionated design that includes only what's needed for the All-In-One pattern while remaining configurable through props.
 
 **Example Usage:**
 
