@@ -1,12 +1,17 @@
 import { Construct } from "constructs";
 import { AIOServer } from "./AIOServer";
-import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
+import {
+  ARecord,
+  HostedZone,
+  IHostedZone,
+  RecordTarget,
+} from "aws-cdk-lib/aws-route53";
 import { Duration } from "aws-cdk-lib";
 
 export interface AIOServerRecordProps {
   aioserver: AIOServer;
   domain: string;
-  hostedZone?: HostedZone;
+  hostedZone?: IHostedZone;
 }
 
 export class AIOServerRecord extends Construct {
